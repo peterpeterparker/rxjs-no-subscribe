@@ -15,7 +15,7 @@ export class CoinsComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
 
-  coins$: Observable<Coin[]> = this.coinsService.coins$;
+  readonly coins$: Observable<Coin[]> = this.coinsService.coins$;
 
   ngOnInit(): void {
     this.coinsService
