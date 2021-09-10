@@ -1,41 +1,35 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { filter, map, tap } from 'rxjs/operators';
 
 export type Coin = Record<string, string | number | boolean>;
 
 @Injectable({
   providedIn: 'root'
 })
-export class CoinsService implements OnDestroy {
+export class CoinsService {
   constructor(private httpClient: HttpClient) {}
 
   private coins: Coin[] = [];
 
-  private destroy$: Subject<void> = new Subject();
-
-  list() {
-    this.httpClient
+  list(): Observable<Coin[]> {
+    return this.httpClient
       .get<Coin[]>(`https://api.coinpaprika.com/v1/coins`)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((allCoins: Coin[]) => {
-        if (allCoins.length > 10) {
-          this.coins = allCoins.filter(
+      .pipe(
+        filter((allCoins: Coin[]) => allCoins.length > 10),
+        map((allCoins: Coin[]) =>
+          allCoins.filter(
             (coin: Coin) =>
               !coin.is_new && coin.rank > 0 && coin.rank < 100
-          );
-        }
-      });
+          )
+        ),
+        tap((topCoins: Coin[]) => (this.coins = topCoins))
+      );
   }
 
   getCoins(): Coin[] {
     return this.coins;
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
