@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { Coin, CoinsService } from '../coins.service';
 
@@ -10,22 +9,8 @@ import { Coin, CoinsService } from '../coins.service';
   templateUrl: './coins.component.html',
   styleUrls: ['./coins.component.css']
 })
-export class CoinsComponent implements OnInit, OnDestroy {
+export class CoinsComponent {
   constructor(private readonly coinsService: CoinsService) {}
 
-  private destroy$: Subject<void> = new Subject<void>();
-
   readonly coins$: Observable<Coin[]> = this.coinsService.coins$;
-
-  ngOnInit(): void {
-    this.coinsService
-      .list()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {});
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
 }
