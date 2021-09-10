@@ -1,4 +1,4 @@
-<article *ngFor="let coin of coins">
+<article *ngFor="let coin of coins$ | async">
   <h1>{{ coin.name }}</h1>
   <p>Symbol: {{ coin.symbol }}</p>
   <p>Rank: {{ coin.rank }}</p>
